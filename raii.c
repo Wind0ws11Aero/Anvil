@@ -1,0 +1,61 @@
+#include "raii.h"
+#include "oop.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+#if __STDC_VERSION__ >= 202311L
+#undef NULL
+#define NULL (nullptr)
+#endif
+
+typedef struct sptr_t sptr_t;
+typedef struct sptr_priv
+{
+    void *rptr;
+    int refc;
+    void (*del_fn)(void *);
+} sptr_priv;
+
+struct sptr_t
+{
+    sptr_priv *priv;
+    method(sptr_t *, borrow, void);
+};
+
+void _SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION(sptr_t **this)
+{
+    (*this)->priv->refc--;
+    if ((*this)->priv->refc == 0)
+    {
+        if ((*this)->priv->del_fn != NULL)
+        {
+            (*this)->priv->del_fn((*this)->priv->rptr);
+        }
+        free((*this)->priv->rptr);
+        free((*this)->priv);
+        free(*this);
+        printf("free");
+    }
+}
+
+sptr_t *sptr_borrow_fn(sptr_t *this)
+{
+    this->priv->refc++;
+    return this;
+}
+ctor(sptr_priv)
+{
+    return 0;
+};
+
+ctor(sptr_t, void *ptr, void (*del_fn)(void *))
+{
+    this->priv = new(sptr_priv);
+    this->priv->rptr = ptr;
+    this->priv->del_fn = del_fn;
+    this->priv->refc = 1;
+    bind(this, borrow, { return sptr_borrow_fn(this); });
+    return 0;
+}
+
+typedef sptr_t *sptr_ptr_t;
