@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-#ifndef __BLOCKS__
+#ifndef _BLOCK_H_
 #error "oop.h requires Blocks support. Compile with clang -fblocks."
 #endif
 
@@ -50,7 +50,7 @@
     void name##_destroy(name *this)
 #define getdtor(name) (name##_destroy_generic)
 
-#define NEW(name, ...)                                                                             \
+#define new(name, ...)                                                                             \
     ({                                                                                             \
         name *oop_this__ = malloc(sizeof(name));                                                   \
         if (oop_this__ && name##_init(oop_this__ __VA_OPT__(, ) __VA_ARGS__) != 0)                 \
@@ -61,7 +61,7 @@
         oop_this__;                                                                                \
     })
 
-#define DELETE(name, obj)                                                                          \
+#define delete(name, obj)                                                                          \
     do                                                                                             \
     {                                                                                              \
         name *oop_this__ = (obj);                                                                  \
@@ -72,6 +72,5 @@
         }                                                                                          \
     } while (0)
 
-#define new NEW
-#define delete DELETE
+
 #endif

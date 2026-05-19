@@ -1,6 +1,5 @@
 #include "raii.h"
 #include "oop.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 #if __STDC_VERSION__ >= 202311L
@@ -20,6 +19,7 @@ struct sptr_t
 {
     sptr_priv *priv;
     method(sptr_t *, borrow, void);
+    method(void *, get_ptr, void);
 };
 
 void _SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION(sptr_t **this)
@@ -34,7 +34,6 @@ void _SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION(sptr_t **this)
         free((*this)->priv->rptr);
         free((*this)->priv);
         free(*this);
-        printf("free");
     }
 }
 
@@ -55,6 +54,7 @@ ctor(sptr_t, void *ptr, void (*del_fn)(void *))
     this->priv->del_fn = del_fn;
     this->priv->refc = 1;
     bind(this, borrow, { return sptr_borrow_fn(this); });
+    bind(this, get_ptr, {return this->priv->rptr;});
     return 0;
 }
 
