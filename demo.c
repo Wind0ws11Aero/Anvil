@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "oop.h"
+#define __RAII_H_DEBUG__
 #include "raii.h"
 
 class (A)
@@ -17,14 +18,14 @@ ctor(A, int a, float b)
     bind(this, get_a, {return this->a;});
     bind(this, get_b, {return this->b;});
     return 0;
-}
+};
 
 dtor(A)
 {
     unbind(this, get_a);
     unbind(this, get_b);
     printf("released obj");
-}
+};
 
 void test1(void)
 {

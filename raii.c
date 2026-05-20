@@ -12,7 +12,7 @@ struct sptr_priv
 {
     void *rptr;
     atomic_int refc;
-    void (*del_fn)(void *);
+    void (^del_fn)(void *);
 };
 
 struct sptr_t
@@ -46,7 +46,7 @@ ctor(sptr_priv)
     return 0;
 };
 
-ctor(sptr_t, void *ptr, void (*del_fn)(void *))
+ctor(sptr_t, void *ptr, void (^del_fn)(void *))
 {
     this->priv = new(sptr_priv);
     this->priv->rptr = ptr;
@@ -55,4 +55,4 @@ ctor(sptr_t, void *ptr, void (*del_fn)(void *))
     bind(this, borrow, { return sptr_borrow_fn(this); });
     bind(this, get_ptr, {return this->priv->rptr;});
     return 0;
-}
+};
