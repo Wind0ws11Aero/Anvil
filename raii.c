@@ -8,13 +8,12 @@
 #define NULL (nullptr)
 #endif
 
-typedef struct sptr_t sptr_t;
-typedef struct sptr_priv
+struct sptr_priv
 {
     void *rptr;
     atomic_int refc;
     void (*del_fn)(void *);
-} sptr_priv;
+};
 
 struct sptr_t
 {
@@ -57,5 +56,3 @@ ctor(sptr_t, void *ptr, void (*del_fn)(void *))
     bind(this, get_ptr, {return this->priv->rptr;});
     return 0;
 }
-
-typedef sptr_t *sptr_ptr_t;
