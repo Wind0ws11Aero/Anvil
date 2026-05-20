@@ -1,6 +1,7 @@
 #include "raii.h"
 #include "oop.h"
 #include <stdlib.h>
+#include <stdatomic.h>
 
 #if __STDC_VERSION__ >= 202311L
 #undef NULL
@@ -11,7 +12,7 @@ typedef struct sptr_t sptr_t;
 typedef struct sptr_priv
 {
     void *rptr;
-    int refc;
+    atomic_int refc;
     void (*del_fn)(void *);
 } sptr_priv;
 
@@ -24,8 +25,7 @@ struct sptr_t
 
 void _SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION(sptr_t **this)
 {
-    (*this)->priv->refc--;
-    if ((*this)->priv->refc == 0)
+    if (atomic_fetch_sub(&((*this)->priv->refc), 1) == 1)
     {
         if ((*this)->priv->del_fn != NULL)
         {
@@ -39,7 +39,7 @@ void _SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION(sptr_t **this)
 
 sptr_t *sptr_borrow_fn(sptr_t *this)
 {
-    this->priv->refc++;
+    atomic_fetch_add(&this->priv->refc, 1);
     return this;
 }
 ctor(sptr_priv)
@@ -52,7 +52,7 @@ ctor(sptr_t, void *ptr, void (*del_fn)(void *))
     this->priv = new(sptr_priv);
     this->priv->rptr = ptr;
     this->priv->del_fn = del_fn;
-    this->priv->refc = 1;
+    atomic_init(&this->priv->refc, 1);
     bind(this, borrow, { return sptr_borrow_fn(this); });
     bind(this, get_ptr, {return this->priv->rptr;});
     return 0;
