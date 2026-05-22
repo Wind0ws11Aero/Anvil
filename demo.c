@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "oop.h"
-#define __RAII_H_DEBUG__
 #include "raii.h"
 
 class (A)
@@ -33,7 +32,6 @@ void test1(void)
     printf("manually manage memory: a->a = %d, a->b = %f\n", a->get_a(), a->get_b());
     delete(A, a);
 }
-
 void test2(void)
 {
     sptr a = new(sptr_t, new(A, 1, 2.0f), getdtor(A));

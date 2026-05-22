@@ -12,30 +12,28 @@
 
 const char *__classes[10000] = {};
 int __count = 0;
-bool find_class(const char *clz)
-{
-    for (int i = 0; i < __count; i++)
-    {
-        if (strcmp(__classes[i], clz) == 0)
-        {
-            return true;
-        }
+bool find_class(const char *clz) {
+  for (int i = 0; i < __count; i++) {
+    if (strcmp(__classes[i], clz) == 0) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
 
-void add_class(const char *clz)
-{
-    __classes[++__count] = clz;
-}
+void add_class(const char *clz) { __classes[++__count] = clz; }
 
-#define CLASS(name)                                                            \
+typedef struct _gtab {
+  void *c;
+  void (^d)(void *this);
+} _gtab;
+
+#define class(name)                                                            \
   typedef struct name name;                                                    \
+  _gtab a = {};                                                                \
   struct name
 
 #define generic_class_init(name) add_class(#name)
-
-#define class(name) CLASS(name)
 
 #define method(ret, name, ...) ret (^name)(__VA_ARGS__)
 
@@ -66,9 +64,9 @@ void add_class(const char *clz)
   extern int (^name##_init)(name * this __VA_OPT__(, ) __VA_ARGS__)
 #define getctor(name) (name##_init)
 #define dtor(name)                                                             \
-  void (^name##_destroy_generic)(void *this) = ^(void *this) {               \
+  void (^name##_destroy_generic)(void *this) = ^(void *this) {                 \
     void (^name##_destroy)(name * this);                                       \
-    name##_destroy((name *)this);                                            \
+    name##_destroy((name *)this);                                              \
   };                                                                           \
   void (^name##_destroy)(name * this) = ^(name * this)
 

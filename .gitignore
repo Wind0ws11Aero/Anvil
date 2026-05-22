@@ -57,3 +57,4 @@ dkms.conf
 # others
 .clangd
 .claude/*/
+.clang-format
