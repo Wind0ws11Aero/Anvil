@@ -52,7 +52,7 @@ ctor(sptr_t, void *ptr, void (^del_fn)(void *))
     this->priv->rptr = ptr;
     this->priv->del_fn = del_fn;
     atomic_init(&this->priv->refc, 1);
-    bind(this, borrow, { return sptr_borrow_fn(this); });
-    bind(this, get_ptr, {return this->priv->rptr;});
+    bind(this, borrow, lambda(sptr_t *, (void), { return sptr_borrow_fn(this); }));
+    bind(this, get_ptr, lambda(void *, (void), { return this->priv->rptr; }));
     return 0;
 };
