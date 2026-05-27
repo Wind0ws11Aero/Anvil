@@ -30,9 +30,10 @@ void _SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION(sptr_t **this)
         {
             (*this)->priv->del_fn((*this)->priv->rptr);
         }
-        free((*this)->priv->rptr);
-        free((*this)->priv);
-        free(*this);
+        free((char *)(*this)->priv->rptr - sizeof(object_t));
+
+        free((void *)((char *)((*this)->priv) - sizeof(object_t)));
+        free((char *)(*this) - sizeof(object_t));
     }
 }
 

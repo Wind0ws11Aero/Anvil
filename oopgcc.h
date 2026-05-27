@@ -4,31 +4,21 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include "base.c"
 
-const char *__classes[10000] = {};
-int __count = 0;
-bool find_class(const char *clz) {
-  for (int i = 0; i < __count; i++) {
-    if (strcmp(__classes[i], clz) == 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void add_class(const char *clz) { __classes[++__count] = clz; }
 
 #define class(name)                                                            \
   typedef struct name name;                                                                                                                  \
   struct name
 
-#include "base.c"
 
 #define generic_class_init(name) add_class(#name)
 
 #define method(ret, name, ...) ret (*name)(__VA_ARGS__)
 
 #define extends(type) type base
+
+#define lbd_t(ret, args) typeof(({ret a args; a;}))
 
 #define lambda(ret, args, body) ({ret lbdfn args body; lbdfn;})
 
@@ -44,8 +34,6 @@ void add_class(const char *clz) { __classes[++__count] = clz; }
     }                                                                          \
   } while (0)
 
-// #define ctor(name, ...) int name##_init(name *this __VA_OPT__(, )
-// __VA_ARGS__)
 #define ctor(name, ...)                                                        \
   int name##_init(name * this __VA_OPT__(, ) __VA_ARGS__)
 #define ctor_decl(name, ...)                                                   \
