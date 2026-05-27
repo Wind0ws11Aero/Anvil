@@ -30,7 +30,7 @@ dtor(A)
 {
     unbind(this, get_a);
     unbind(this, get_b);
-    printf("released obj");
+    printf("released obj\n");
 };
 
 void test1(void)
