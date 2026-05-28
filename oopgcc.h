@@ -1,10 +1,14 @@
 #ifndef OOPGCC_H
 #define OOPGCC_H
+#error Anvil is not and will not support GCC, for more info, check out why_anvil_dont_support_gcc.txt.
 
+// This is the legacy oopgcc.h code, it is broke, and I deprecated it. See why_anvil_dont_support_gcc.txt for more info.
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include "base.c"
+
+#define fptr *
 
 
 #define class(name)                                                            \
@@ -54,10 +58,12 @@
 
 #define new(name, ...)                                                         \
   ({                                                                           \
-    name *oop_this__ = malloc(sizeof(name));                                   \
-    if (oop_this__ &&                                                          \
+    name *oop_this__ = (calloc(1, sizeof(object_t) + sizeof(name)) + sizeof(object_t));                                   \
+    object_t *bthis = ((object_t *)oop_this__) - 1;\
+    bthis->cls_name = #name;\
+    if (bthis &&                                                          \
         name##_init(oop_this__ __VA_OPT__(, ) __VA_ARGS__) != 0) {             \
-      free(oop_this__);                                                        \
+      abort();                                                  \
       oop_this__ = NULL;                                                       \
     }                                                                          \
     oop_this__;                                                                \
@@ -67,9 +73,11 @@
   do {                                                                         \
     name *oop_this__ = (obj);                                                  \
     if (oop_this__) {                                                          \
-      name##_destroy(oop_this__);                                              \
-      free(oop_this__);                                                        \
+      name##_destroy_generic(oop_this__);                                              \
+      object_t *bthis = (object_t *)((char *)oop_this__ - sizeof(object_t));\
+      free(bthis);                                                        \
     }                                                                          \
   } while (0)
+
 
 #endif

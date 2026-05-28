@@ -1,5 +1,6 @@
 #include "raii.h"
 #include "oop.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdatomic.h>
 
@@ -12,7 +13,7 @@ struct sptr_priv
 {
     void *rptr;
     atomic_int refc;
-    void (^del_fn)(void *);
+    void (fptr del_fn)(void *);
 };
 
 struct sptr_t
@@ -24,6 +25,7 @@ struct sptr_t
 
 void _SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION(sptr_t **this)
 {
+    printf("In free, refc: %d\n", (*this)->priv->refc);
     if (atomic_fetch_sub(&((*this)->priv->refc), 1) == 1)
     {
         if ((*this)->priv->del_fn != NULL)
@@ -47,7 +49,7 @@ ctor(sptr_priv)
     return 0;
 };
 
-ctor(sptr_t, void *ptr, void (^del_fn)(void *))
+ctor(sptr_t, void *ptr, void (fptr del_fn)(void *))
 {
     this->priv = new(sptr_priv);
     this->priv->rptr = ptr;

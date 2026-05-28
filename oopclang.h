@@ -11,6 +11,8 @@
 #error "oopclang.h requires Blocks support. Compile with clang -fblocks."
 #endif
 
+#define fptr ^
+
 #define class(name)                                                            \
   typedef struct name name;                                                                                                                  \
   struct name

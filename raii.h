@@ -14,7 +14,7 @@ struct sptr_t
 
 void _SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION(sptr_t **this);
 
-ctor_decl(sptr_t, void *ptr, void (^del_fn)(void *));
+ctor_decl(sptr_t, void *ptr, void (fptr del_fn)(void *));
 
 typedef sptr_t *sptr_ptr_t;
 
