@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include "oop.h"
-
+#include "oopclang.h"
 #include "raii.h"
 
 class (A)
@@ -31,6 +30,7 @@ void test1(void)
 {
     A *a = new(A, 1, 2.0f);
     printf("manually manage memory: a->a = %d, a->b = %f\n", a->get_a(), a->get_b());
+    printf("Is a instance of A? %d", instanceof(A, a));
     delete(A, a);
 }
 void test2(void)
