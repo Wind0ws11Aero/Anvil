@@ -25,13 +25,13 @@
 
 #define lbd_t(ret, args)                                                                           \
     typeof({                                                                                       \
-        ret(^a) args;                                                                              \
+        ret (^a) args;                                                                              \
         a                                                                                          \
     })
 
 #define lambda(ret, args, body)                                                                    \
     ({                                                                                             \
-        ret(^lbdfn) args = ^ret args body;                                                         \
+        ret (^lbdfn) args = ^ret args body;                                                         \
         lbdfn;                                                                                     \
     })
 
@@ -65,6 +65,8 @@
 #define dtor_decl(name) extern void (^name##_destroy_generic)(void *this)
 
 #define getdtor(name) (void (^)(void *this))(name##_destroy_generic)
+
+#define private(cls, membs...) struct __##cls##priv membs *priv
 
 #define new(name, ...)                                                                             \
     ({                                                                                             \

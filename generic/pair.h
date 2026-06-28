@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #define pair(T, U)       \
-    class(__pair_##T##U) \
+    struct __pair_##T##U \
     {                    \
         T first;         \
         U second;        \
