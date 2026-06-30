@@ -24,10 +24,10 @@
 #define extends(type) type base
 
 #define lbd_t(ret, args)                                                                           \
-    typeof({                                                                                       \
+    typeof(({                                                                                       \
         ret (^a) args;                                                                              \
         a                                                                                          \
-    })
+    }))
 
 #define lambda(ret, args, body)                                                                    \
     ({                                                                                             \
@@ -60,8 +60,12 @@
         ^int(name * this __VA_OPT__(, ) __VA_ARGS__)
 #define ctor_decl(name, ...) extern int (^name##_init)(name * this __VA_OPT__(, ) __VA_ARGS__)
 #define getctor(name) (name##_init)
-#define dtor(name) void (^name##_destroy_generic)(name * this) = ^(name * this)
-
+#define dtor(name)                                                             \
+  void (^name##_destroy_generic)(void *this) = ^(void *this) {               \
+    void (^name##_destroy)(name * this);                                       \
+    name##_destroy((name *)this);                                            \
+  };                                                                           \
+  void (^name##_destroy)(name * this) = ^(name * this)
 #define dtor_decl(name) extern void (^name##_destroy_generic)(void *this)
 
 #define getdtor(name) (void (^)(void *this))(name##_destroy_generic)
