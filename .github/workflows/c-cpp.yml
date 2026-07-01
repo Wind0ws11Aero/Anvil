@@ -16,6 +16,6 @@ jobs:
     - name: get runtime
       run: sudo apt-get install clang libblocksruntime-dev
     - name: build demo
-      run: clang -o doop -std=c23 -lBlocksRuntime demoop.c
+      run: clang -o doop -std=c23 -lBlocksRuntime -fblocks demoop.c
     - name: run demo
       run: ./doop
