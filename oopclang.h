@@ -62,7 +62,7 @@
 #define getctor(name) (name##_init)
 #define dtor(name)                                                             \
   void (^name##_destroy_generic)(void *this) = ^(void *this) {               \
-    void (^name##_destroy)(name * this);                                       \
+    extern void (^name##_destroy)(name * this);                                       \
     name##_destroy((name *)this);                                            \
   };                                                                           \
   void (^name##_destroy)(name * this) = ^(name * this)
