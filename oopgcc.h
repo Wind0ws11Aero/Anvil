@@ -58,8 +58,8 @@
 
 #define new(name, ...)                                                         \
   ({                                                                           \
-    name *oop_this__ = (calloc(1, sizeof(object_t) + sizeof(name)) + sizeof(object_t));                                   \
-    object_t *bthis = ((object_t *)oop_this__) - 1;\
+    name *oop_this__ = (calloc(1, sizeof(Object) + sizeof(name)) + sizeof(Object));                                   \
+    Object *bthis = ((Object *)oop_this__) - 1;\
     bthis->cls_name = #name;\
     if (bthis &&                                                          \
         name##_init(oop_this__ __VA_OPT__(, ) __VA_ARGS__) != 0) {             \
@@ -74,7 +74,7 @@
     name *oop_this__ = (obj);                                                  \
     if (oop_this__) {                                                          \
       name##_destroy_generic(oop_this__);                                              \
-      object_t *bthis = (object_t *)((char *)oop_this__ - sizeof(object_t));\
+      Object *bthis = (Object *)((char *)oop_this__ - sizeof(Object));\
       free(bthis);                                                        \
     }                                                                          \
   } while (0)

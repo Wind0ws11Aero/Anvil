@@ -10,5 +10,5 @@ int main(void)
         ->write("fuck")
         ->flush();
     f->close();
-    delete(fstream, f);
+    delete(f);
 }

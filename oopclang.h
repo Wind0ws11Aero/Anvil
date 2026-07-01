@@ -1,6 +1,12 @@
 #ifndef OOPCLANG_H
 #define OOPCLANG_H
 
+#include "flags.h"
+
+#ifndef EXPER_DELETE
+#define EXPER_DELETE 0
+#endif
+
 #include "base.c"
 #include <Block.h>
 #include <stddef.h>
@@ -14,6 +20,11 @@
 #define fptr ^
 
 #define class(name)                                                                                \
+    dtor_decl(name);\
+    typedef struct name name;                                                                      \
+    struct name
+
+#define interface(name)                                                                                \
     typedef struct name name;                                                                      \
     struct name
 
@@ -62,7 +73,7 @@
 #define getctor(name) (name##_init)
 #define dtor(name)                                                             \
   void (^name##_destroy_generic)(void *this) = ^(void *this) {               \
-    void (^name##_destroy)(name * this);                                       \
+    extern void (^name##_destroy)(name * this);                                       \
     name##_destroy((name *)this);                                            \
   };                                                                           \
   void (^name##_destroy)(name * this) = ^(name * this)
@@ -74,9 +85,10 @@
 
 #define new(name, ...)                                                                             \
     ({                                                                                             \
-        name *oop_this__ = (calloc(1, sizeof(object_t) + sizeof(name)) + sizeof(object_t));        \
-        object_t *bthis = ((void *)oop_this__) - sizeof(object_t);                                 \
+        name *oop_this__ = (calloc(1, sizeof(Object) + sizeof(name)) + sizeof(Object));        \
+        Object *bthis = ((void *)oop_this__) - sizeof(Object);                                 \
         bthis->cls_name = #name;                                                                   \
+        bthis->dtor_fn = name##_destroy_generic;\
         if (bthis && name##_init(oop_this__ __VA_OPT__(, ) __VA_ARGS__) != 0)                      \
         {                                                                                          \
             abort();                                                                               \
@@ -85,6 +97,7 @@
         oop_this__;                                                                                \
     })
 
+#if !EXPER_DELETE
 #define delete(name, obj)                                                                          \
     do                                                                                             \
     {                                                                                              \
@@ -92,20 +105,31 @@
         if (oop_this__)                                                                            \
         {                                                                                          \
             name##_destroy_generic(oop_this__);                                                    \
-            object_t *bthis = (object_t *)((char *)oop_this__ - sizeof(object_t));                 \
+            Object *bthis = (Object *)((char *)oop_this__ - sizeof(Object));                 \
             free(bthis);                                                                           \
         }                                                                                          \
     } while (0)
+#else
+#define delete(obj)                                                                          \
+    ({                                                                                              \
+        void *oop_this__ = (obj);                                                                  \
+        if (oop_this__)                                                                            \
+        {                                                                                          \
+            Object *bthis = (Object *)((char *)oop_this__ - sizeof(Object));                 \
+            bthis->dtor_fn(oop_this__); free(bthis);                                                                           \
+        }                                                                                          \
+    })
+#endif
 
 #define to_object(obj)                                                                             \
     ({                                                                                             \
-        object_t *this = ((object_t *)obj) - 1;                                                    \
+        Object *this = ((Object *)obj) - 1;                                                    \
         this;                                                                                      \
     })
 
 #define instanceof(type, obj)                                                                      \
     ({                                                                                             \
-        object_t *this = to_object(obj);                                                           \
+        Object *this = to_object(obj);                                                           \
         strcmp(this->cls_name, #type) == 0;                                                                   \
     })
 

@@ -1,5 +1,6 @@
 #include "raii.h"
 #include "oop.h"
+#include "oopclang.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdatomic.h>
@@ -16,6 +17,8 @@ struct sptr_priv
     void (fptr del_fn)(void *);
 };
 
+dtor(sptr_priv) {};
+
 struct sptr_t
 {
     sptr_priv *priv;
@@ -23,19 +26,23 @@ struct sptr_t
     method(void *, get_ptr, void);
 };
 
+dtor(sptr_t) {};
+
 void _SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION(sptr_t **this)
 {
+#ifdef __RAII_DEBUG__
     printf("In free, refc: %d\n", (*this)->priv->refc);
+#endif
     if (atomic_fetch_sub(&((*this)->priv->refc), 1) == 1)
     {
         if ((*this)->priv->del_fn != NULL)
         {
             (*this)->priv->del_fn((*this)->priv->rptr);
         }
-        free((char *)(*this)->priv->rptr - sizeof(object_t));
+        free((char *)(*this)->priv->rptr - sizeof(Object));
 
-        free((void *)((char *)((*this)->priv) - sizeof(object_t)));
-        free((char *)(*this) - sizeof(object_t));
+        free((void *)((char *)((*this)->priv) - sizeof(Object)));
+        free((char *)(*this) - sizeof(Object));
     }
 }
 

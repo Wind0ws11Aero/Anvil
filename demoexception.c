@@ -12,5 +12,5 @@ int main(void) throws
         exception_as(e);
         printf("%s", e->msg);
     }
-    
+    throw(Exception("Shit."));
 }

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define EXPER_DELETE 1
 #include "oopclang.h"
 #include "raii.h"
 
@@ -30,8 +31,8 @@ void test1(void)
 {
     A *a = new(A, 1, 2.0f);
     printf("manually manage memory: a->a = %d, a->b = %f\n", a->get_a(), a->get_b());
-    printf("Is a instance of A? %d", instanceof(A, a));
-    delete(A, a);
+    printf("Is a instance of A? %d\n", instanceof(A, a));
+    delete(a);
 }
 void test2(void)
 {

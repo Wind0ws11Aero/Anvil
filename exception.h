@@ -2,7 +2,9 @@
 #define EXCEPTION_H
 #include "oop.h"
 #include <setjmp.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <_abort.h>
 
 typedef struct Exception
 {
@@ -74,6 +76,11 @@ Exception *ExceptionHandler_peek(ExceptionHandler *this)
 
 [[noreturn]] void throw(Exception *e)
 {
+    if (_handler.len == 0)
+    {
+        perror("ExceptionHandler: terminating due to an uncaught exception. Aborting.\n");
+        abort();
+    }
     Exception *oe = ExceptionHandler_peek(&_handler);
     oe->errno = e->errno;
     oe->msg = e->msg;

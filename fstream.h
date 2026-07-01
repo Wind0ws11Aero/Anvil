@@ -21,7 +21,7 @@ ctor(fstream, const char *fname, const char *mode) throws
     this->raw_file = fopen(fname, mode);
     if (this->raw_file == NULL) 
     {
-        delete(fstream, this);
+        delete(this);
         throw(Exception("Failed to open file."));
     }
     bind(this, write, ^(char *cont){
