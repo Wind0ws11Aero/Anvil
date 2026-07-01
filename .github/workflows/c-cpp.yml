@@ -13,7 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: get runtime
+      run: sudo apt-get install clang libblocksruntime-dev
     - name: build demo
-      run: clang -o doop -std=c23 demoop.c
+      run: clang -o doop -std=c23 -lBlocksRuntime demoop.c
     - name: run demo
       run: ./doop
