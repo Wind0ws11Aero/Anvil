@@ -74,8 +74,7 @@ thread_local Exception *_placeholder;
 
 [[gnu::destructor]] void _exception_deinit()
 {
-    free(_global_handler->list);
-    free(_global_handler);
+    delete(_global_handler);
     free(_placeholder);
 }
 
