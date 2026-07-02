@@ -55,6 +55,9 @@ ctor(ExceptionHandler)
 dtor(ExceptionHandler)
 {
     free(this->list);
+    unbind(this, pop);
+    unbind(this, peek);
+    unbind(this, push);
 };
 
 thread_local ExceptionHandler *_global_handler;
