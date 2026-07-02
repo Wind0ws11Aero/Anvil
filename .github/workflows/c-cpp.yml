@@ -1,0 +1,21 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: get runtime
+      run: sudo apt-get install clang libblocksruntime-dev
+    - name: build demo
+      run: clang -o doop -std=c23 -lBlocksRuntime -fblocks demoop.c raii.c
+    - name: run demo
+      run: ./doop
