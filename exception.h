@@ -24,14 +24,14 @@ thread_local ExceptionHandler _handler;
 
 thread_local Exception *_placeholder;
 
-[[gnu::constructor]] void _ct()
+[[gnu::constructor]] void _exception_initializer()
 {
     _handler.len = 0;
     _handler.list = malloc(sizeof(Exception));
     _placeholder = malloc(sizeof(Exception));
 }
 
-[[gnu::destructor]] void _dt()
+[[gnu::destructor]] void _exception_deinitializer()
 {
     free(_handler.list);
     free(_placeholder);
