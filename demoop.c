@@ -1,5 +1,4 @@
 #include <stdio.h>
-#define EXPER_DELETE 1
 #include "oopclang.h"
 #include "raii.h"
 
