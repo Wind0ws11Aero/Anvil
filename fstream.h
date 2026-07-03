@@ -24,27 +24,32 @@ ctor(fstream, const char *fname, const char *mode) throws
         delete(this);
         throw(Exception("Failed to open file."));
     }
-    bind(this, write, ^(char *cont){
+    bind(this, write, char *cont)
+    {
         if (fputs(cont, this->raw_file) < 0) throw(Exception("Error"));
         return this;
-    });
-    bind(this, flush, ^{
+    };
+    bind(this, flush)
+    {
         fflush(this->raw_file);
         return this;
-    });
-    bind(this, close, ^{
+    };
+    bind(this, close)
+    {
         fclose(this->raw_file);
-    });
-    bind(this, rewind, ^{
+    };
+    bind(this, rewind){
         rewind(this->raw_file);
         return this;
-    });
-    bind(this, seek, ^(long offset, int origin){
+    };
+    bind(this, seek, long offset, int origin)
+    {
         fseek(this->raw_file, offset, origin);
         return this;
-    });
-    bind(this, tell, ^{
+    };
+    bind(this, tell)
+    {
         return ftell(this->raw_file);
-    });
+    };
     return 0;
 };

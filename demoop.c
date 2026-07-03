@@ -14,8 +14,14 @@ ctor(A, int a, float b)
 {
     this->a = a;
     this->b = b;
-    bind(this, get_a, lambda(int, (void), {return this->a;}));
-    bind(this, get_b, lambda(float, (void), {return this->b;}));
+    bind(this, get_a, void)
+    {
+        return this->a;
+    };
+    bind(this, get_b)
+    {
+        return this->b;
+    };
     return 0;
 };
 
@@ -35,7 +41,7 @@ void test1(void)
 }
 void test2(void)
 {
-    sptr a = new(sptr_t, new(A, 1, 2.0f), getdtor(A));
+    sptr a = new(sptr_t, new(A, 1, 2.0f));
     A *obj = a->get_ptr();
     printf("automaticlly manage memory: a->a = %d, a->b = %f\n", obj->get_a(), obj->get_b());
 }

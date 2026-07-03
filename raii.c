@@ -56,13 +56,19 @@ ctor(sptr_priv)
     return 0;
 };
 
-ctor(sptr_t, void *ptr, void (fptr del_fn)(void *))
+ctor(sptr_t, void *ptr)
 {
     this->priv = new(sptr_priv);
     this->priv->rptr = ptr;
-    this->priv->del_fn = del_fn;
+    this->priv->del_fn = to_object(ptr)->dtor_fn;
     atomic_init(&this->priv->refc, 1);
-    bind(this, borrow, lambda(sptr_t *, (void), { return sptr_borrow_fn(this); }));
-    bind(this, get_ptr, lambda(void *, (void), { return this->priv->rptr; }));
+    bind(this, borrow) 
+    {
+        return sptr_borrow_fn(this); 
+    };
+    bind(this, get_ptr)
+    {
+        return this->priv->rptr;
+    };
     return 0;
 };

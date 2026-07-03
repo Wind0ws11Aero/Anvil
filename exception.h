@@ -36,19 +36,22 @@ ctor(ExceptionHandler)
 {
     this->len = 0;
     this->list = malloc(sizeof(Exception));
-    bind(this, push, ^(Exception e) {
+    bind(this, push, Exception e)
+    {
         ++this->len;
         this->list = realloc(this->list, sizeof(Exception) * this->len);
         this->list[this->len - 1] = e;
-    });
-    bind(this, pop, ^{
+    };
+    bind(this, pop)
+    {
         Exception *e = &this->list[--this->len];
         this->list = realloc(this->list, sizeof(Exception) * (this->len ? this->len : 1));
         return e;
-    });
-    bind(this, peek, ^{
+    };
+    bind(this, peek)
+    {
         return &this->list[this->len - 1];
-    });
+    };
     return 0;
 };
 

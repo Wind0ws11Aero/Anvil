@@ -3,10 +3,6 @@
 
 #include "flags.h"
 
-#ifndef EXPER_DELETE
-#define EXPER_DELETE 0
-#endif
-
 #include "base.c"
 #include <Block.h>
 #include <stddef.h>
@@ -46,6 +42,7 @@
         lbdfn;                                                                                     \
     })
 
+#if !EXPER_BIND
 #define bind(self, member, lbd)                                                                    \
     ({                                                                                            \
         if ((self)->member)                                                                        \
@@ -54,7 +51,9 @@
         }                                                                                          \
         (self)->member = Block_copy(lbd);                                                          \
     })
-
+#else
+#define bind(self, member, ...) for (typeof((self)->member) __blck = (void *)1; __blck != NULL; (self)->member = Block_copy(__blck), __blck = NULL) __blck = ^(__VA_ARGS__)
+#endif
 #define unbind(self, member)                                                                       \
     ({                                                                                              \
         if ((self)->member)                                                                        \

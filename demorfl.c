@@ -12,7 +12,10 @@ class (A)
 ctor(A, int a)
 {
     this->a = a;
-    bind(this, get_a, lambda(int, (void), {return this->a;}));
+    bind(this, get_a)
+    {
+        return this->a;
+    };
     return 0;
 };
 
