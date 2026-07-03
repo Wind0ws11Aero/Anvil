@@ -1,11 +1,14 @@
 #include "oop.h"
 
+#define private(cls) struct __##cls##priv *priv; struct __##cls##priv
+
 class (A)
 {
-    private(A, {
+    private (A)
+    {
         int a;
         float b;
-    });
+    };
     method(int, get_a);
     method(float, get_b);
 };
