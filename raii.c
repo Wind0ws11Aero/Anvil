@@ -1,6 +1,6 @@
 #include "raii.h"
 #include "oop.h"
-#include "oopclang.h"
+#include "oop.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdatomic.h>
@@ -14,17 +14,10 @@ struct sptr_priv
 {
     void *rptr;
     atomic_int refc;
-    void (fptr del_fn)(void *);
+    void (^del_fn)(void *);
 };
 
 dtor(sptr_priv) {};
-
-struct sptr_t
-{
-    sptr_priv *priv;
-    method(sptr_t *, borrow, void);
-    method(void *, get_ptr, void);
-};
 
 dtor(sptr_t) {};
 

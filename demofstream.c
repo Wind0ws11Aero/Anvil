@@ -1,14 +1,12 @@
 #include "fstream.h"
-#include "oopclang.h"
-#include "stdio.h"
+#include "oop.h"
 
-int main(void)
+int main()
 {
-    fstream *f = new(fstream, "a.txt", "w");
+    adel fstream *f = new(fstream, "a.txt", "w");
     f
-        ->write("shit")
-        ->write("fuck")
+        ->write("Hello, ")
+        ->write("world!")
         ->flush();
     f->close();
-    delete(f);
 }

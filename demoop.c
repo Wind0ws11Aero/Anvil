@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "oopclang.h"
+#include "oop.h"
 #include "raii.h"
 
 class (A)
@@ -41,12 +41,12 @@ void test1(void)
 }
 void test2(void)
 {
-    sptr a = new(sptr_t, new(A, 1, 2.0f));
+    sptr a = make_shared(A, 1, 2.0f);
     A *obj = a->get_ptr();
     printf("automaticlly manage memory: a->a = %d, a->b = %f\n", obj->get_a(), obj->get_b());
 }
 
-int main(void)
+int main()
 {
     test1();
     test2();

@@ -1,7 +1,7 @@
 #include "exception.h"
 #include <stdio.h>
 
-int main(void) throws
+int main() throws
 {
     try
     {

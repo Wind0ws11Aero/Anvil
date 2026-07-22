@@ -1,6 +1,6 @@
 #ifndef OOPGCC_H
 #define OOPGCC_H
-#error Anvil is not and will not support GCC, for more info, check out why_anvil_dont_support_gcc.txt.
+#error Anvil will not support GCC.
 
 // This is the legacy oopgcc.h code, it is broke, and it is deprecated. 
 #include <stddef.h>

@@ -161,7 +161,7 @@ ctor(Integer, int v)
 
 ### 3. RAII 智慧指標
 
-`sptr` 透過引用計數與 `__attribute__((cleanup))` 實現自動記憶體管理。當 `sptr` 變數離開作用域時，引用計數遞減——計數歸零時自動釋放所管理的物件。
+`sptr` 透過引用計數與 `[[gnu::cleanup]]` 實現自動記憶體管理。當 `sptr` 變數離開作用域時，引用計數遞減——計數歸零時自動釋放所管理的物件。
 
 ```c
 #include "raii.h"
@@ -179,7 +179,7 @@ void example(void)
 | 型別 / 巨集 | 用途 |
 |---|---|
 | `sptr_t` | 智慧指標類別（包含 `sptr_priv`，持有引用計數與原始指標） |
-| `sptr` | 帶 `__attribute__((cleanup))` 自動釋放的變數宣告 |
+| `sptr` | 帶 `[[gnu::cleanup]]` 自動釋放的變數宣告 |
 | `new(sptr_t, ptr)` | 將原始 `new(...)` 指標包裝為智慧指標 |
 | `a->borrow()` | 借用引用（引用計數 +1） |
 | `a->get_ptr()` | 取出原始指標 |
@@ -188,14 +188,14 @@ void example(void)
 
 ### 4. Defer
 
-`defer` 是 **C2Y** 特性（[ISO/IEC TS 25755](https://www.open-std.org/jtc1/sc22/wg14/)），計劃在下一次 C 標準修訂中正式納入。Anvil 提供了一個**輕量巨集**，其語法與 C2Y 的 `defer` 保持原始碼相容。當編譯器已支援 C2Y（定義了 `__STDC_DEFER_TS25755__`）時，該巨集將直接透傳至 `<stddefer.h>` 中的原生 `_Defer` 實作；否則退回基於 Clang Blocks 與 `__attribute__((cleanup))` 的實作。
+`defer` 是 **C2Y** 特性（[ISO/IEC TS 25755](https://www.open-std.org/jtc1/sc22/wg14/)），計劃在下一次 C 標準修訂中正式納入。Anvil 提供了一個**輕量巨集**，其語法與 C2Y 的 `defer` 保持原始碼相容。當編譯器已支援 C2Y（定義了 `__STDC_DEFER_TS25755__`）時，該巨集將直接透傳至 `<stddefer.h>` 中的原生 `_Defer` 實作；否則退回基於 Clang Blocks 與 `[[gnu::cleanup]]` 的實作。
 
 ```c
 #include "defer.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(void)
+int main()
 {
     int *arr = malloc(sizeof(int) * 10);
     defer
@@ -217,7 +217,7 @@ int main(void)
 ```c
 #include "fstream.h"
 
-int main(void)
+int main()
 {
     fstream *f = new(fstream, "log.txt", "w");
     defer
@@ -234,7 +234,7 @@ int main(void)
 | 實作路徑 | 條件 |
 |---|---|
 | 原生 C2Y `_Defer` | 已定義 `__STDC_DEFER_TS25755__` |
-| Anvil 退回方案 | 使用 `__attribute__((cleanup))` + Clang Blocks |
+| Anvil 退回方案 | 使用 `[[gnu::cleanup]]` + Clang Blocks |
 
 ---
 
@@ -248,7 +248,7 @@ int main(void)
 #include "exception.h"
 #include <stdio.h>
 
-int main(void) throws
+int main() throws
 {
     try
     {
@@ -284,7 +284,7 @@ int main(void) throws
 ```c
 #include "fstream.h"
 
-int main(void)
+int main()
 {
     fstream *f = new(fstream, "a.txt", "w");
     f
@@ -342,7 +342,7 @@ reflect(
     rfl_member(A, get_a)
 );
 
-int main(void)
+int main()
 {
     void *a = new(A, 5);
     printf("%d\n", getfield(A, a, a));      // 按名稱讀取欄位 "a"   → 5
@@ -367,7 +367,7 @@ int main(void)
 ```c
 #include "generic/pair.h"
 
-int main(void)
+int main()
 {
     pair(int, float) *p = new_pair(int, float, 42, 3.14f);
     printf("first = %d, second = %f\n", p->first, p->second);

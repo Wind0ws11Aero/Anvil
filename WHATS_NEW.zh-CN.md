@@ -62,7 +62,7 @@ private(A)
 
 ### 移除 GCC 支持
 
-Anvil 现在仅面向 **Clang**。`oopgcc.h` 后端已移除。Blocks 扩展和 `__attribute__((cleanup))` 是 Anvil 设计的基础，而这些是 Clang 原生特性。
+Anvil 现在仅面向 **Clang**。`oopgcc.h` 后端已移除。Blocks 扩展是 Anvil 设计的基础，而这些是 Clang 原生特性。
 
 ### 异常系统重构
 
@@ -91,7 +91,7 @@ class (ExceptionHandler) { /* 带 push/pop/peek 方法的正式类 */ };
 ```c
 #include "defer.h"
 
-int main(void)
+int main()
 {
     int *arr = malloc(sizeof(int) * 10);
     defer
@@ -164,7 +164,7 @@ clang -fblocks -lBlocksRuntime -DEXPER_BIND=0 program.c
 新增用于文档化异常保证的标注宏。两者均展开为空——它们作为可读性提示，也为未来的静态分析预留空间。
 
 ```c
-int main(void) throws
+int main() throws
 {
     // 可能抛出异常
 }

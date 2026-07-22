@@ -161,7 +161,7 @@ ctor(Integer, int v)
 
 ### 3. RAII Smart Pointers
 
-`sptr` provides automatic memory management via reference counting and `__attribute__((cleanup))`. When a `sptr` variable goes out of scope, its reference count is decremented — the managed object is freed when the count reaches zero.
+`sptr` provides automatic memory management via reference counting and `[[gnu::cleanup]]`. When a `sptr` variable goes out of scope, its reference count is decremented — the managed object is freed when the count reaches zero.
 
 ```c
 #include "raii.h"
@@ -179,7 +179,7 @@ void example(void)
 | Type / Macro | Purpose |
 |---|---|
 | `sptr_t` | Smart pointer class (holds `sptr_priv` with refcount + raw pointer) |
-| `sptr` | Variable declaration with `__attribute__((cleanup))` auto-release |
+| `sptr` | Variable declaration with `[[gnu::cleanup]]` auto-release |
 | `new(sptr_t, ptr)` | Wrap a raw `new(...)` pointer in a smart pointer |
 | `a->borrow()` | Borrow a reference (increment refcount) |
 | `a->get_ptr()` | Unwrap the raw pointer |
@@ -188,14 +188,14 @@ void example(void)
 
 ### 4. Defer
 
-`defer` is a **C2Y** feature ([ISO/IEC TS 25755](https://www.open-std.org/jtc1/sc22/wg14/)), scheduled to be standardized in the next C revision. Anvil provides a **lightweight macro** that is source-compatible with C2Y's `defer` syntax. When the compiler already supports C2Y (`__STDC_DEFER_TS25755__` is defined), the macro transparently delegates to `<stddefer.h>`'s native `_Defer` implementation. Otherwise, it falls back to a Clang Blocks-based implementation using `__attribute__((cleanup))`.
+`defer` is a **C2Y** feature ([ISO/IEC TS 25755](https://www.open-std.org/jtc1/sc22/wg14/)), scheduled to be standardized in the next C revision. Anvil provides a **lightweight macro** that is source-compatible with C2Y's `defer` syntax. When the compiler already supports C2Y (`__STDC_DEFER_TS25755__` is defined), the macro transparently delegates to `<stddefer.h>`'s native `_Defer` implementation. Otherwise, it falls back to a Clang Blocks-based implementation using `[[gnu::cleanup]]`.
 
 ```c
 #include "defer.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(void)
+int main()
 {
     int *arr = malloc(sizeof(int) * 10);
     defer
@@ -217,7 +217,7 @@ Combine `defer` with `fstream`:
 ```c
 #include "fstream.h"
 
-int main(void)
+int main()
 {
     fstream *f = new(fstream, "log.txt", "w");
     defer
@@ -234,7 +234,7 @@ int main(void)
 | Implementation path | Conditions |
 |---|---|
 | Native C2Y `_Defer` | `__STDC_DEFER_TS25755__` is defined |
-| Anvil fallback | Uses `__attribute__((cleanup))` + Clang Blocks |
+| Anvil fallback | Uses `[[gnu::cleanup]]` + Clang Blocks |
 
 ---
 
@@ -248,7 +248,7 @@ C++-style `try`/`catch`/`throw` built on `setjmp`/`longjmp` with a thread-local 
 #include "exception.h"
 #include <stdio.h>
 
-int main(void) throws
+int main() throws
 {
     try
     {
@@ -284,7 +284,7 @@ A fluent file I/O wrapper with method chaining. Supports `write`, `flush`, `clos
 ```c
 #include "fstream.h"
 
-int main(void)
+int main()
 {
     fstream *f = new(fstream, "a.txt", "w");
     f
@@ -342,7 +342,7 @@ reflect(
     rfl_member(A, get_a)
 );
 
-int main(void)
+int main()
 {
     void *a = new(A, 5);
     printf("%d\n", getfield(A, a, a));      // read field "a" by name   → 5
@@ -367,7 +367,7 @@ Type-safe generic data structures via C macros. Includes a generic `pair<T, U>`.
 ```c
 #include "generic/pair.h"
 
-int main(void)
+int main()
 {
     pair(int, float) *p = new_pair(int, float, 42, 3.14f);
     printf("first = %d, second = %f\n", p->first, p->second);

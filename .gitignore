@@ -63,9 +63,11 @@ gfn.c
 de
 dd
 de
+di
 defer_test.txt
 doop
 test
 test.cpp
 doop.dSYM
 .workbuddy
+.DS_Store

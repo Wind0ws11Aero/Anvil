@@ -19,6 +19,8 @@ dtor_decl(sptr_t);
 
 typedef sptr_t *sptr_ptr_t;
 
+#define make_shared(T, ...) new(sptr_t, new(T __VA_OPT__(,) __VA_ARGS__))
+
 #define sptr                                                                                       \
-    __attribute__((cleanup(_SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION))) sptr_ptr_t
+    [[gnu::cleanup(_SPTR_CLEAN_FUNCTION_CALLBACK_DONT_USE_IT_AS_A_FUNCTION)]] sptr_ptr_t
 #endif

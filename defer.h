@@ -22,7 +22,7 @@ static inline void _defer_cleanup_fn(defer_block_t *blk)
 }
 
 #define defer                                                                                       \
-    __attribute__((cleanup(_defer_cleanup_fn)))                                                     \
+    [[gnu::cleanup(_defer_cleanup_fn)]]                                                   \
     defer_block_t __DEFER_CONCAT(__defer_fn_, __COUNTER__) = ^
 
 #else

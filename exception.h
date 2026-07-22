@@ -1,11 +1,12 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 #include "oop.h"
-#include "oopclang.h"
+#include "oop.h"
 #include <_abort.h>
 #include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 class (Exception)
 {
@@ -45,8 +46,10 @@ ctor(ExceptionHandler)
     bind(this, pop)
     {
         Exception *e = &this->list[--this->len];
+        Exception *ret = malloc(sizeof(Exception));
+        memcpy(ret, e, sizeof(Exception));
         this->list = realloc(this->list, sizeof(Exception) * (this->len ? this->len : 1));
-        return e;
+        return ret;
     };
     bind(this, peek)
     {
@@ -92,11 +95,11 @@ thread_local Exception *_placeholder;
 #define catch_with_handler(_handler)                                                                                      \
     }                                                                                              \
     if (_handler->peek()->errno == 0)                                               \
-        _handler->pop();                                                            \
+        free(_handler->pop());                                                            \
     else                                                                                           \
-        for (Exception *__exception = _handler->peek();                             \
+        for (Exception *__exception = _handler->pop();                             \
              __exception->errno != 0 && __exception != _placeholder;                               \
-             __exception = _placeholder, _handler->pop())
+             free(__exception), __exception = _placeholder)
 
 #define try try_with_handler(_global_handler)
 #define catch catch_with_handler(_global_handler)

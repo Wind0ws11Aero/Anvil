@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fstream.h"
-#include "oopclang.h"
+#include "oop.h"
 
-int main(void)
+int main()
 {
     int *arr = malloc(sizeof(int) * 10);
     defer

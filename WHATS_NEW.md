@@ -62,7 +62,7 @@ The internal metadata header has been upgraded from `object_t` to `Object`. Ever
 
 ### GCC Support Removed
 
-Anvil now targets **Clang only**. The `oopgcc.h` backend has been removed. The Blocks extension and `__attribute__((cleanup))` are fundamental to Anvil's design and are Clang-native features.
+Anvil now targets **Clang only**. The `oopgcc.h` backend has been removed. The Blocks extension are fundamental to Anvil's design and are Clang-native features.
 
 ### Exception System Refactored
 
@@ -91,7 +91,7 @@ class (ExceptionHandler) { /* proper class with push/pop/peek methods */ };
 ```c
 #include "defer.h"
 
-int main(void)
+int main()
 {
     int *arr = malloc(sizeof(int) * 10);
     defer
@@ -164,7 +164,7 @@ clang -fblocks -lBlocksRuntime -DEXPER_BIND=0 program.c
 New annotation macros for documenting exception guarantees. Both expand to nothing — they serve as human-readable hints and future-proofing for static analysis.
 
 ```c
-int main(void) throws
+int main() throws
 {
     // may throw
 }
