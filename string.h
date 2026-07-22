@@ -1,3 +1,6 @@
+#ifndef STRING_H
+#define STRING_H
+
 #include "oop.h"
 #include "stli.h"
 
@@ -19,3 +22,5 @@ class (String)
 
 ctor_decl(String, const char *cstr);
 dtor_decl(String);
+
+#endif

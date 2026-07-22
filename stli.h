@@ -1,3 +1,6 @@
+#ifndef STL_INTERFACE_H
+#define STL_INTERFACE_H
+
 #include "oop.h"
 
 interface (_stl)
@@ -7,3 +10,5 @@ interface (_stl)
     method(void *, end, void);
     method(void *, at, int);
 };
+
+#endif

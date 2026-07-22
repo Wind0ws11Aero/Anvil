@@ -6,5 +6,6 @@
 #include "fstream.h"
 #include "defer.h"
 #include "dataclass.h"
+#include "string.h"
 
 #endif
