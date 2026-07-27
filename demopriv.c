@@ -15,6 +15,7 @@ class (A)
 
 ctor(A, int a, float b)
 {
+    alloc_priv(A);
     this->priv->a = a;
     this->priv->b = b;
     bind(this, get_a)

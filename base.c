@@ -5,7 +5,7 @@ typedef struct Object Object;
 struct Object
 {
     const char *cls_name;
-    void (^dtor_fn)(void *this);
+    void (*dtor_fn)(void *this);
     size_t capacity;
 };
 typedef Object object_t;

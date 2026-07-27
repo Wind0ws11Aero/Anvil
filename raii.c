@@ -14,8 +14,10 @@ struct sptr_priv
 {
     void *rptr;
     atomic_int refc;
-    void (^del_fn)(void *);
+    void (*del_fn)(void *);
 };
+
+dtor_decl(sptr_priv);
 
 dtor(sptr_priv) {};
 

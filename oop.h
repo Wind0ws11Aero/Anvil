@@ -13,13 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef Block_copy
-#error "oop.h requires Blocks support. Compile with clang -fblocks."
-#endif
-
 #define class(name)                                                                                \
-    dtor_decl(name);                                                                               \
-    typedef struct name name;                                                                      \
+    typedef struct name name;                                                                               \
+    dtor_decl(name);                                                                      \
     struct name
 
 #define interface(name)                                                                            \
@@ -67,19 +63,17 @@
     })
 
 #define ctor(name, ...)                                                                            \
-    int (^name##_init)(name * this __VA_OPT__(, ) __VA_ARGS__) =                                   \
-        ^int(name * this __VA_OPT__(, ) __VA_ARGS__)
-#define ctor_decl(name, ...) extern int (^name##_init)(name * this __VA_OPT__(, ) __VA_ARGS__)
+    int name##_init(name * this __VA_OPT__(, ) __VA_ARGS__)                               
+#define ctor_decl(name, ...) int name##_init(name * this __VA_OPT__(, ) __VA_ARGS__)
 #define getctor(name) (name##_init)
 #define dtor(name)                                                                                 \
-    void (^name##_destroy_generic)(void *this) = ^(void *this) {                                   \
-      extern void (^name##_destroy)(name * this);                                                  \
+    void name##_destroy_generic(void *this) {                                   \
       name##_destroy((name *)this);                                                                \
     };                                                                                             \
-    void (^name##_destroy)(name * this) = ^(name * this)
-#define dtor_decl(name) extern void (^name##_destroy_generic)(void *this)
+    void name##_destroy(name * this)
+#define dtor_decl(name) void name##_destroy_generic(void *this); void name##_destroy(name *this)
 
-#define getdtor(name) (void (^)(void *this))(name##_destroy_generic)
+#define getdtor(name) (void (*)(void *this))(name##_destroy_generic)
 
 #define sizeof_object(obj) (sizeof(obj) + sizeof(Object))
 
@@ -89,7 +83,9 @@
     struct __##cls##priv *priv;                                                                    \
     struct __##cls##priv
 
-#define private_decl(cls) struct __##cls##priv *priv;
+#define private_decl(cls) struct __##cls##priv *priv
+
+#define alloc_priv(cls) this->priv = malloc(sizeof(struct __##cls##priv))
 
 #define new(type, ...)                                                                             \
     ({                                                                                             \
@@ -130,7 +126,7 @@
         }                                                                                          \
     })
 #endif
-void _cleanup_DD(void *v)
+static inline void _cleanup_DD(void *v)
 {
     delete(*(void **)v);
 }

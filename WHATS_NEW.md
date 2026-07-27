@@ -182,7 +182,6 @@ New utility macros for working with Clang Blocks:
 | Macro | Purpose |
 |---|---|
 | `lambda(ret, args, body)` | Inline lambda expression returning a Block |
-| `fptr` | Shorthand for `^` (Block pointer) |
 | `lbd_t(ret, args)` | Type alias for a Block prototype |
 
 ```c

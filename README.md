@@ -490,7 +490,6 @@ clang -fblocks -lBlocksRuntime your_program.c
 | Macro | Purpose |
 |---|---|
 | `lambda(ret, args, body)` | Inline lambda expression returning a Block |
-| `fptr` | Shorthand for `^` (Block pointer syntax) |
 | `lbd_t(ret, args)` | Type alias for a Block prototype |
 
 ---

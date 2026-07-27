@@ -2,7 +2,7 @@
 #include "string.h"
 #include "utils.h"
 
-class (Integer)
+class(Integer)
 {
     int int_value;
 };
@@ -13,9 +13,9 @@ ctor(Integer, int value)
     return 0;
 };
 
-dtor(Integer) {};
+dtor(Integer){};
 
-class (Float)
+class(Float)
 {
     float float_value;
 };
@@ -26,9 +26,9 @@ ctor(Float, float value)
     return 0;
 };
 
-dtor(Float) {};
+dtor(Float){};
 
-class (Double)
+class(Double)
 {
     double double_value;
 };
@@ -39,9 +39,9 @@ ctor(Double, float value)
     return 0;
 };
 
-dtor(Double) {};
+dtor(Double){};
 
-class (Character)
+class(Character)
 {
     char char_value;
 };
@@ -52,13 +52,15 @@ ctor(Character, char value)
     return 0;
 };
 
-dtor(Character) {};
+dtor(Character){};
 
-#define __to_dataclass_one(x)                                                                       \
-    _Generic((x),                                                                                   \
-        int: new(Integer, x),                                                                       \
-        float: new(Float, x),                                                                       \
-        double: new(Double, x),                                                                     \
-        char: new(Character, x), char *: new(String, x))
+
+#define __to_dataclass_one(x)                                                                      \
+    _Generic((x),                                                                                  \
+        int: new (Integer, (int)(x)),                                                               \
+        float: new (Float, (float)(x)),                                                             \
+        double: new (Double, (double)(x)),                                                           \
+        char: new (Character, (char)(x)),                                                           \
+        char *: new (String, (const char *)(x)))
 
 #define to_dataclass(...) EXPAND_ALL(__to_dataclass_one, __VA_ARGS__)

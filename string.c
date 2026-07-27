@@ -1,14 +1,12 @@
-#include "anvilcomps.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include "oop.h"
 #include "stli.h"
+#include "exception.h"
 #include <stdlib.h>
 
 #define privn(cls) struct __##cls##priv
-
-#define alloc_priv(cls) this->priv = malloc(sizeof(struct __##cls##priv))
 
 class (String)
 {

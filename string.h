@@ -7,11 +7,7 @@
 class (String)
 {
     extends(_stl);
-    private(String)
-    {
-        char *c_str;
-        size_t length;
-    };
+    private_decl(String);
     method(char *, c_str, void);
     method(size_t, length, void);
     method(size_t, size, void);

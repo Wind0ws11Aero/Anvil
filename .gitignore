@@ -69,5 +69,14 @@ doop
 test
 test.cpp
 doop.dSYM
+r
 .workbuddy
 .DS_Store
+nob
+nob.old
+dg
+generic/*
+interesting_thoughts
+.vscode
+a.txt
+do

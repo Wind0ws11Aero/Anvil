@@ -34,4 +34,6 @@
 
 #define _macro_type_restriction(var, type) static_assert(_Generic((var), type: 1, default: 0), "Macro arguments required type " #type " but other.")
 
+#define overload [[clang::overloadable]]
+
 #endif
