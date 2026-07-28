@@ -24,7 +24,7 @@ class (Exception)
         e;                                                                                         \
     })
 
-class (ExceptionHandler)
+interface (ExceptionHandler)
 {
     Exception *list;
     size_t len;
@@ -33,7 +33,7 @@ class (ExceptionHandler)
     method(Exception *, peek, void);
 };
 
-ctor(ExceptionHandler)
+static ctor(ExceptionHandler)
 {
     this->len = 0;
     this->list = malloc(sizeof(Exception));
@@ -58,7 +58,8 @@ ctor(ExceptionHandler)
     return 0;
 };
 
-dtor(ExceptionHandler)
+static void ExceptionHandler_destroy(ExceptionHandler *this);
+static dtor(ExceptionHandler)
 {
     free(this->list);
     unbind(this, pop);
@@ -66,11 +67,11 @@ dtor(ExceptionHandler)
     unbind(this, push);
 };
 
-thread_local ExceptionHandler *_global_handler;
+static thread_local ExceptionHandler *_global_handler;
 
-thread_local Exception *_placeholder;
+static thread_local Exception *_placeholder;
 
-[[gnu::constructor]] void _exception_init()
+[[gnu::constructor]] static void _exception_init()
 {
     _global_handler = new(ExceptionHandler);
     _global_handler->len = 0;
@@ -78,7 +79,7 @@ thread_local Exception *_placeholder;
     _placeholder = Exception("");
 }
 
-[[gnu::destructor]] void _exception_deinit()
+[[gnu::destructor]] static void _exception_deinit()
 {
     delete(_global_handler);
     free(_placeholder);
@@ -106,7 +107,7 @@ thread_local Exception *_placeholder;
 
 #define exception_as(ename) Exception *ename = __exception
 
-[[noreturn]] void throw_with_handler(ExceptionHandler *_handler, Exception * e)
+[[noreturn]] static void throw_with_handler(ExceptionHandler *_handler, Exception * e)
 {
     if (_handler->len == 0)
     {
@@ -120,7 +121,7 @@ thread_local Exception *_placeholder;
     longjmp(*oe->jbuf, 1);
 }
 
-[[noreturn]] void throw(Exception *e)
+[[noreturn]] static void throw(Exception *e)
 {
     throw_with_handler(_global_handler, e);
 }

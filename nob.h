@@ -1114,6 +1114,8 @@ NOBDEF void nob__go_rebuild_urself(int argc, char **argv, const char *source_pat
 
     Nob_Cmd cmd = {0};
 
+    
+
     const char *old_binary_path = nob_temp_sprintf("%s.old", binary_path);
 
     if (!nob_rename(binary_path, old_binary_path)) exit(1);
@@ -1129,7 +1131,6 @@ NOBDEF void nob__go_rebuild_urself(int argc, char **argv, const char *source_pat
     // we may turn it on by default.
     nob_delete_file(old_binary_path);
 #endif // NOB_EXPERIMENTAL_DELETE_OLD
-
     nob_cmd_append(&cmd, binary_path);
     nob_da_append_many(&cmd, argv, argc);
     if (!nob_cmd_run_opt(&cmd, opt)) exit(1);
