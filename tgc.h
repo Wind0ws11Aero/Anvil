@@ -1,3 +1,9 @@
+/*
+ * Origin: https://github.com/orangeduck/tgc
+ * Licensed under the BSD License
+ * Copyright (c) 2013, Daniel Holden All rights reserved.
+ */
+
 #ifndef TGC_H
 #define TGC_H
 
