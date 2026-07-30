@@ -2,7 +2,6 @@
 #define EXCEPTION_H
 #include "oop.h"
 #include "oop.h"
-#include <_abort.h>
 #include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>

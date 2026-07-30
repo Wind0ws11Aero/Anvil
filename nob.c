@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     __auto_type offset = __builtin_frame_address(0) - global;
     char *b = malloc(snprintf(nullptr, 0, "-D_OFFSOFCAM=%ld", offset));
     sprintf(b, "-D_OFFSOFCAM=%ld", offset);
-    nob_cmd_append(&cmd, "clang", "-std=c2y", "-fno-inline", b);
+    nob_cmd_append(&cmd, "clang", "-std=c2y", "-fno-inline", "-fblocks", b);
     for (int i = 1; i < (argc); ++i)
     {
         nob_cmd_append(&cmd, argv[i]);
@@ -81,6 +81,9 @@ int main(int argc, char *argv[])
     buf = realloc(buf, strlen(buf) + strlen("/anvilimpl.c") + 1);
     strcat(buf, "/anvilimpl.c");
     nob_cmd_append(&cmd, buf);
+#ifdef __linux__
+    nob_cmd_append(&cmd, "-lBlocksRuntime");
+#endif
     nob_cmd_run_sync(cmd);
     free(buf);
     free(b);
