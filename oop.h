@@ -63,17 +63,23 @@
     })
 
 #define ctor(name, ...)                                                                            \
-    int name##_init(name * this __VA_OPT__(, ) __VA_ARGS__)                               
+    int name##_init(name * this __VA_OPT__(, ) __VA_ARGS__)                     
+
 #define ctor_decl(name, ...) int name##_init(name * this __VA_OPT__(, ) __VA_ARGS__)
+
 #define getctor(name) (name##_init)
+
 #define dtor(name)                                                                                 \
     void name##_destroy_generic(void *this) {                                   \
-      name##_destroy((name *)this);                                                                \
+      name##_destroy(this);                                                                \
     };                                                                                             \
+    void name##_destroy_objh(void *this) {name##_destroy(this + sizeof(Object));};\
     void name##_destroy(name * this)
-#define dtor_decl(name) void name##_destroy_generic(void *this); void name##_destroy(name *this)
+    
+#define dtor_decl(name) void name##_destroy_generic(void *this); void name##_destroy(name *this); void name##_destroy_objh(void *this)
 
 #define getdtor(name) (void (*)(void *this))(name##_destroy_generic)
+#define getdtor_objh(name) (void (*)(void *this))(name##_destroy_objh)
 
 #define sizeof_object(obj) (sizeof(obj) + sizeof(Object))
 
@@ -126,7 +132,7 @@
         }                                                                                          \
     })
 #endif
-static inline void _cleanup_DD(void *v)
+static void _cleanup_DD(void *v)
 {
     delete(*(void **)v);
 }
@@ -155,5 +161,16 @@ static inline void _cleanup_DD(void *v)
 
 #define divfn_cast(base_t, div_t, fn, ...) (div_t *)(fn(EXPAND_ALL(__dcast, __VA_ARGS__)))
 #define null nullptr
+
+static bool obj_equals(ObjectCast obj1, ObjectCast obj2)
+{
+    if (obj1 == obj2) return true;
+    if (strcmp(to_object(obj1)->cls_name, to_object(obj2)->cls_name) != 0)
+    {
+        return false;
+    }
+    size_t cap = to_object(obj1)->capacity - sizeof(Object);
+    return memcmp(obj1, obj2, cap) == 0;
+}
 
 #endif
