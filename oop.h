@@ -5,17 +5,18 @@
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 
 // Impls
-#include "flags.h"
-#include "utils.h"
 #include "base.c"
+#include "flags.h"
+#include "tgc.h"
+#include "utils.h"
 #include <Block.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define class(name)                                                                                \
-    typedef struct name name;                                                                               \
-    dtor_decl(name);                                                                      \
+    typedef struct name name;                                                                      \
+    dtor_decl(name);                                                                               \
     struct name
 
 #define interface(name)                                                                            \
@@ -62,21 +63,27 @@
         }                                                                                          \
     })
 
-#define ctor(name, ...)                                                                            \
-    int name##_init(name * this __VA_OPT__(, ) __VA_ARGS__)                     
+#define ctor(name, ...) int name##_init(name *this __VA_OPT__(, ) __VA_ARGS__)
 
-#define ctor_decl(name, ...) int name##_init(name * this __VA_OPT__(, ) __VA_ARGS__)
+#define ctor_decl(name, ...) int name##_init(name *this __VA_OPT__(, ) __VA_ARGS__)
 
 #define getctor(name) (name##_init)
 
 #define dtor(name)                                                                                 \
-    void name##_destroy_generic(void *this) {                                   \
-      name##_destroy(this);                                                                \
+    void name##_destroy_generic(void *this)                                                        \
+    {                                                                                              \
+        name##_destroy(this);                                                                      \
     };                                                                                             \
-    void name##_destroy_objh(void *this) {name##_destroy(this + sizeof(Object));};\
-    void name##_destroy(name * this)
-    
-#define dtor_decl(name) void name##_destroy_generic(void *this); void name##_destroy(name *this); void name##_destroy_objh(void *this)
+    void name##_destroy_objh(void *this)                                                           \
+    {                                                                                              \
+        name##_destroy(this + sizeof(Object));                                                     \
+    };                                                                                             \
+    void name##_destroy(name *this)
+
+#define dtor_decl(name)                                                                            \
+    void name##_destroy_generic(void *this);                                                       \
+    void name##_destroy(name *this);                                                               \
+    void name##_destroy_objh(void *this)
 
 #define getdtor(name) (void (*)(void *this))(name##_destroy_generic)
 #define getdtor_objh(name) (void (*)(void *this))(name##_destroy_objh)
@@ -93,13 +100,53 @@
 
 #define alloc_priv(cls) this->priv = malloc(sizeof(struct __##cls##priv))
 
+#if NEWDEL_BYGC
+static tgc_t gc;
+
+[[gnu::constructor(0)]] static void __initializer()
+{
+    tgc_start(&gc, __builtin_frame_address(0) + _OFFSOFCAM);
+}
+
+[[gnu::destructor]] static void __deinitializer()
+{
+    tgc_stop(&gc);
+}
+
+static int __counter_()
+{
+    static int i = 0;
+    if (i == 3)
+        i = 0;
+    return ++i;
+}
 #define new(type, ...)                                                                             \
     ({                                                                                             \
-        type *oop_this__ = (malloc(sizeof_object(type)) + sizeof(Object));            \
+        type *oop_this__ =                                                                         \
+            (tgc_alloc_opt(&gc, sizeof_object(type), 0, getdtor_objh(type)) + sizeof(Object));     \
         Object *bthis = ((void *)oop_this__) - sizeof(Object);                                     \
         bthis->cls_name = #type;                                                                   \
         bthis->dtor_fn = type##_destroy_generic;                                                   \
-        bthis->capacity = sizeof_object(type);\
+        bthis->capacity = sizeof_object(type);                                                     \
+        if (bthis && type##_init(oop_this__ __VA_OPT__(, ) __VA_ARGS__) != 0)                      \
+        {                                                                                          \
+            abort();                                                                               \
+            oop_this__ = NULL;                                                                     \
+        }                                                                                          \
+        if (__counter_() == 3)                                                                     \
+            tgc_sweep(&gc);                                                                        \
+        oop_this__;                                                                                \
+    })
+
+#define delete(obj) (tgc_free(&gc, obj))
+#else
+#define new(type, ...)                                                                             \
+    ({                                                                                             \
+        type *oop_this__ = (malloc(sizeof_object(type)) + sizeof(Object));                         \
+        Object *bthis = ((void *)oop_this__) - sizeof(Object);                                     \
+        bthis->cls_name = #type;                                                                   \
+        bthis->dtor_fn = type##_destroy_generic;                                                   \
+        bthis->capacity = sizeof_object(type);                                                     \
         if (bthis && type##_init(oop_this__ __VA_OPT__(, ) __VA_ARGS__) != 0)                      \
         {                                                                                          \
             abort();                                                                               \
@@ -132,18 +179,20 @@
         }                                                                                          \
     })
 #endif
+#endif
 static void _cleanup_DD(void *v)
 {
-    delete(*(void **)v);
+    delete (*(void **)v);
 }
 #define to_object(obj)                                                                             \
     ({                                                                                             \
-        Object *oop_this__ = ((Object *)obj) - 1;                                                        \
-        oop_this__;                                                                                      \
+        Object *oop_this__ = ((Object *)obj) - 1;                                                  \
+        oop_this__;                                                                                \
     })
 
 #define to_class(clz, obj)                                                                         \
-    ({  _macro_type_restriction(obj, Object *);                                                                                             \
+    ({                                                                                             \
+        _macro_type_restriction(obj, Object *);                                                    \
         void *this = obj + 1;                                                                      \
         (clz *)this;                                                                               \
     })
@@ -154,17 +203,15 @@ static void _cleanup_DD(void *v)
         strcmp(this->cls_name, #type) == 0;                                                        \
     })
 
-
-
 #define __dcast(var) (void *)(var)
-
 
 #define divfn_cast(base_t, div_t, fn, ...) (div_t *)(fn(EXPAND_ALL(__dcast, __VA_ARGS__)))
 #define null nullptr
 
 static bool obj_equals(ObjectCast obj1, ObjectCast obj2)
 {
-    if (obj1 == obj2) return true;
+    if (obj1 == obj2)
+        return true;
     if (strcmp(to_object(obj1)->cls_name, to_object(obj2)->cls_name) != 0)
     {
         return false;
