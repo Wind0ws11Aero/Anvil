@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     __auto_type offset = __builtin_frame_address(0) - global;
     char *b = malloc(snprintf(nullptr, 0, "-D_OFFSOFCAM=%ld", offset));
     sprintf(b, "-D_OFFSOFCAM=%ld", offset);
-    nob_cmd_append(&cmd, "clang", "-std=c2y", "-fno-inline", "-fblocks", b);
+    nob_cmd_append(&cmd, "clang", "-std=gnu2y", "-fno-inline", "-fblocks", b);
     for (int i = 1; i < (argc); ++i)
     {
         nob_cmd_append(&cmd, argv[i]);

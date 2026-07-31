@@ -11,5 +11,3 @@ struct Object
 typedef Object object_t;
 
 typedef void *ObjectCast;
-
-#define to_objcast(var) ((ObjectCast)(var))
