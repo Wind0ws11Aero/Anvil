@@ -436,7 +436,7 @@ Defined in `flags.h`. Override with `-D` at compile time.
 | Flag | Required? | Purpose |
 |---|---|---|
 | `-fblocks` | **Required** | Enable Clang Blocks extension |
-| `-lBlocksRuntime` | **Required** | Link the Blocks runtime library |
+| `-lBlocksRuntime` | **Required** | Link the Blocks runtime library on Linux and Windows|
 | `-DEXPER_DELETE=0` | Optional | Disable type-less `delete(obj)` |
 | `-DEXPER_BIND=0` | Optional | Disable extended `bind` syntax |
 
@@ -445,6 +445,14 @@ Minimal build command:
 ```sh
 clang -fblocks -lBlocksRuntime your_program.c
 ```
+
+---
+
+---
+
+## About Windows
+
+**Anvil** is compatible with **LLVM-MINGW Clang** and has conflicts with Clang **which provided by Visual Studio**. **libBlocksRuntime** for Windows is provided in Anvil.
 
 ---
 
